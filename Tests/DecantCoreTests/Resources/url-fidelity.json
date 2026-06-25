@@ -1,0 +1,130 @@
+{
+  "description": "Acceptance corpus for surgical-splice URL fidelity (SCHEMA.md §7). Evaluated against dist/rules.bundle.json. 'expected' is byte-exact: kept parameters retain original encoding and order; only removed params and their separators are excised. Engines MUST pass all cases.",
+  "semantics": {
+    "separator": "Split query on '&' only. ';' is NOT a parameter separator (WHATWG URL). 'a=1;b=2' is one token.",
+    "nameComparison": "Percent-decoded, case-sensitive.",
+    "fragment": "Never touched. A '?' inside the fragment is part of the fragment, not a query.",
+    "emptyQuery": "If all params are removed, drop the '?' entirely."
+  },
+  "cases": [
+    {
+      "name": "leading-param-removed",
+      "input": "https://x.com/i/web/status/1?s=20&lang=en",
+      "expected": "https://x.com/i/web/status/1?lang=en",
+      "removed": ["s"],
+      "modified": true
+    },
+    {
+      "name": "trailing-param-removed",
+      "input": "https://x.com/i/web/status/1?lang=en&s=20",
+      "expected": "https://x.com/i/web/status/1?lang=en",
+      "removed": ["s"],
+      "modified": true
+    },
+    {
+      "name": "all-params-removed-drops-question-mark",
+      "input": "https://example.com/p?utm_source=x&utm_medium=y",
+      "expected": "https://example.com/p",
+      "removed": ["utm_source", "utm_medium"],
+      "modified": true
+    },
+    {
+      "name": "plus-as-space-preserved-in-kept-value",
+      "input": "https://example.com/s?q=a+b&fbclid=ABC",
+      "expected": "https://example.com/s?q=a+b",
+      "removed": ["fbclid"],
+      "modified": true,
+      "note": "Must NOT normalize '+' to %20 or space — kept bytes are verbatim."
+    },
+    {
+      "name": "percent-encoding-preserved-in-kept-value",
+      "input": "https://example.com/s?q=hello%20world&gclid=ABC",
+      "expected": "https://example.com/s?q=hello%20world",
+      "removed": ["gclid"],
+      "modified": true
+    },
+    {
+      "name": "fragment-with-question-mark-untouched",
+      "input": "https://example.com/p?utm_source=x#section?notaquery=1",
+      "expected": "https://example.com/p#section?notaquery=1",
+      "removed": ["utm_source"],
+      "modified": true
+    },
+    {
+      "name": "empty-value-kept",
+      "input": "https://example.com/p?a=&utm_source=x",
+      "expected": "https://example.com/p?a=",
+      "removed": ["utm_source"],
+      "modified": true
+    },
+    {
+      "name": "valueless-param-removed",
+      "input": "https://example.com/p?fbclid&q=1",
+      "expected": "https://example.com/p?q=1",
+      "removed": ["fbclid"],
+      "modified": true,
+      "note": "A name without '=' still matches by name."
+    },
+    {
+      "name": "keeponly-preserves-repeated-kept-names",
+      "input": "https://www.youtube.com/watch?v=abc&v=def&feature=share&si=XYZ",
+      "expected": "https://www.youtube.com/watch?v=abc&v=def",
+      "removed": ["feature", "si"],
+      "modified": true,
+      "note": "keepOnly[v,t,list,index]: both 'v' occurrences kept; feature/si stripped."
+    },
+    {
+      "name": "percent-encoded-name-matches",
+      "input": "https://example.com/p?utm%5Fsource=x&q=1",
+      "expected": "https://example.com/p?q=1",
+      "removed": ["utm%5Fsource"],
+      "modified": true,
+      "note": "Name decodes to 'utm_source' → matches prefix 'utm_'. 'removed' reports the original on-wire spelling."
+    },
+    {
+      "name": "case-sensitive-name-match",
+      "input": "https://example.com/p?UTM_SOURCE=x&utm_source=y",
+      "expected": "https://example.com/p?UTM_SOURCE=x",
+      "removed": ["utm_source"],
+      "modified": true,
+      "note": "Prefix match is case-sensitive: 'UTM_SOURCE' is kept."
+    },
+    {
+      "name": "host-label-boundary-no-false-match",
+      "input": "https://notamazon.com/p?tag=abc-20",
+      "expected": "https://notamazon.com/p?tag=abc-20",
+      "removed": [],
+      "modified": false,
+      "note": "Security: 'notamazon.com' must NOT match suffix 'amazon.com'."
+    },
+    {
+      "name": "subdomain-cctld-suffix-match",
+      "input": "https://www.amazon.co.uk/dp/B08N5WRWNW?tag=aff-21&node=12345",
+      "expected": "https://www.amazon.co.uk/dp/B08N5WRWNW?node=12345",
+      "removed": ["tag"],
+      "modified": true,
+      "note": "www.amazon.co.uk matches suffix 'amazon.co.uk'."
+    },
+    {
+      "name": "semicolon-is-not-a-separator",
+      "input": "https://example.com/p?a=1;b=2&utm_source=x",
+      "expected": "https://example.com/p?a=1;b=2",
+      "removed": ["utm_source"],
+      "modified": true
+    },
+    {
+      "name": "no-query-unchanged",
+      "input": "https://example.com/path/to/page",
+      "expected": "https://example.com/path/to/page",
+      "removed": [],
+      "modified": false
+    },
+    {
+      "name": "query-no-match-unchanged",
+      "input": "https://example.com/p?q=1&page=2",
+      "expected": "https://example.com/p?q=1&page=2",
+      "removed": [],
+      "modified": false
+    }
+  ]
+}

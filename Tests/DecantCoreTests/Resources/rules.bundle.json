@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "generation": 1,
+  "generatedAt": "2026-06-18T00:00:00Z",
+  "rules": [
+    {
+      "id": "tracking.utm",
+      "name": "UTM campaign parameters",
+      "description": "Google Analytics / Urchin campaign tags. Tracking-only, safe to strip everywhere.",
+      "matcher": { "type": "any" },
+      "actions": [ { "type": "removeParameters", "select": { "prefix": "utm_" } } ],
+      "source": "builtIn",
+      "category": "tracking"
+    },
+    {
+      "id": "tracking.click-ids",
+      "name": "Ad-network click identifiers",
+      "description": "Per-click attribution ids appended by ad networks. No effect on content; tracking-only.",
+      "matcher": { "type": "any" },
+      "actions": [
+        {
+          "type": "removeParameters",
+          "select": {
+            "names": [
+              "fbclid", "gclid", "gclsrc", "dclid", "wbraid", "gbraid",
+              "msclkid", "yclid", "twclid", "ttclid", "rdt_cid",
+              "mc_eid", "mc_cid", "mkt_tok", "_hsenc", "_hsmi", "vero_id", "oly_enc_id", "oly_anon_id"
+            ]
+          }
+        }
+      ],
+      "source": "builtIn",
+      "category": "tracking"
+    },
+    {
+      "id": "social.twitter",
+      "name": "Twitter / X tracking",
+      "description": "Share-sheet and referrer params on twitter.com and x.com.",
+      "matcher": { "type": "host", "suffix": ["twitter.com", "x.com"] },
+      "actions": [
+        { "type": "removeParameters", "select": { "names": ["s", "t", "ref_src", "ref_url", "src"] } }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
+      "id": "social.instagram",
+      "name": "Instagram tracking",
+      "description": "Share grid id appended to shared Instagram links.",
+      "matcher": { "type": "host", "suffix": ["instagram.com"] },
+      "actions": [
+        { "type": "removeParameters", "select": { "names": ["igshid", "igsh"] } }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
+      "id": "social.facebook",
+      "name": "Facebook tracking",
+      "description": "Action/referrer/notification tracking on Facebook hosts. fbclid handled globally.",
+      "matcher": { "type": "host", "suffix": ["facebook.com", "fb.com"] },
+      "actions": [
+        {
+          "type": "removeParameters",
+          "select": {
+            "names": ["fb_action_ids", "fb_action_types", "fb_source", "fb_ref",
+                      "comment_tracking", "notif_t", "notif_id", "ref", "refsrc", "hrc"]
+          }
+        }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
+      "id": "social.tiktok",
+      "name": "TikTok tracking",
+      "description": "Webapp/copy-link tracking params on TikTok.",
+      "matcher": { "type": "host", "suffix": ["tiktok.com"] },
+      "actions": [
+        { "type": "removeParameters", "select": { "names": ["is_copy_url", "is_from_webapp", "_r", "_t"] } }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
+      "id": "social.youtube",
+      "name": "YouTube cleanup",
+      "description": "Keep only the params that affect playback; strip everything else (feature, si, pp, etc.).",
+      "matcher": { "type": "host", "suffix": ["youtube.com", "youtu.be"] },
+      "actions": [
+        { "type": "removeParameters", "select": { "keepOnly": ["v", "t", "list", "index"] } }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
+      "id": "shopping.amazon",
+      "name": "Amazon tracking",
+      "description": "Affiliate tags, referral and session params across Amazon marketplaces. ccTLDs enumerated (no PSL).",
+      "matcher": {
+        "type": "host",
+        "suffix": [
+          "amazon.com", "amazon.co.uk", "amazon.de", "amazon.fr", "amazon.it",
+          "amazon.es", "amazon.nl", "amazon.se", "amazon.pl", "amazon.com.tr",
+          "amazon.ca", "amazon.com.mx", "amazon.com.br", "amazon.co.jp",
+          "amazon.in", "amazon.com.au", "amazon.sg", "amazon.ae", "amazon.sa"
+        ]
+      },
+      "actions": [
+        {
+          "type": "removeParameters",
+          "select": {
+            "names": ["tag", "ref", "ref_", "psc", "qid", "sr", "keywords", "sprefix",
+                      "crid", "dib", "dib_tag", "th", "pf", "linkCode", "linkId", "camp",
+                      "creative", "creativeASIN", "ascsubtag", "smid", "spLa", "sp_csd"]
+          }
+        },
+        { "type": "removeParameters", "select": { "prefix": "pf_rd_" } },
+        { "type": "removeParameters", "select": { "prefix": "pd_rd_" } }
+      ],
+      "source": "builtIn",
+      "category": "shopping"
+    }
+  ]
+}
