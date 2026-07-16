@@ -20,6 +20,7 @@ let package = Package(
       resources: [
         .copy("Resources/rules.bundle.json"),
         .copy("Resources/url-fidelity.json"),
+        .copy("Resources/semantic-safety.json"),
       ]
     ),
   ]

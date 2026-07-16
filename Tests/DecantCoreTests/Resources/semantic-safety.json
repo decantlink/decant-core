@@ -1,0 +1,41 @@
+{
+  "description": "Rule-data QA corpus: cleaning must not change destination content. Splice mechanics live in url-fidelity.json; these cases pin FUNCTIONAL parameters the rules must never strip. Evaluated against dist/rules.bundle.json. Engines MUST pass all cases.",
+  "cases": [
+    {
+      "name": "amazon-variant-selection-kept",
+      "input": "https://www.amazon.com/dp/B08N5WRWNW?th=1&psc=1&tag=aff-20",
+      "expected": "https://www.amazon.com/dp/B08N5WRWNW?th=1&psc=1",
+      "removed": ["tag"],
+      "modified": true,
+      "note": "th/psc select the displayed product variant — stripping them silently changes what the recipient sees (audit finding, 15 Jul 2026)."
+    },
+    {
+      "name": "youtube-playback-params-kept",
+      "input": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42&si=AbCdEf",
+      "expected": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42",
+      "removed": ["si"],
+      "modified": true
+    },
+    {
+      "name": "youtube-playlist-position-kept",
+      "input": "https://www.youtube.com/watch?v=abc&list=PL123&index=4&pp=xyz",
+      "expected": "https://www.youtube.com/watch?v=abc&list=PL123&index=4",
+      "removed": ["pp"],
+      "modified": true
+    },
+    {
+      "name": "search-query-kept-under-global-rules",
+      "input": "https://example.com/search?q=a%20b&utm_source=nl&utm_medium=email",
+      "expected": "https://example.com/search?q=a%20b",
+      "removed": ["utm_source", "utm_medium"],
+      "modified": true
+    },
+    {
+      "name": "pagination-and-sort-untouched",
+      "input": "https://example.com/list?page=3&sort=asc",
+      "expected": "https://example.com/list?page=3&sort=asc",
+      "removed": [],
+      "modified": false
+    }
+  ]
+}

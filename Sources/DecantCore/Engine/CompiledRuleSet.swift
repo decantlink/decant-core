@@ -52,6 +52,11 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
     var keptTokens: [Substring] = []
     var removedNames: [String] = []
     for token in rawQuery.split(separator: "&", omittingEmptySubsequences: false) {
+      // An empty token (from "&&" or a trailing "&") is not a parameter — keep it byte-verbatim.
+      if token.isEmpty {
+        keptTokens.append(token)
+        continue
+      }
       let onWireName = token.firstIndex(of: "=").map { token[..<$0] } ?? token
       let decodedName = String(onWireName).removingPercentEncoding ?? String(onWireName)
       if removals.removes(decodedName: decodedName) {
@@ -63,7 +68,8 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
 
     guard !removedNames.isEmpty else { return .unchanged(url) }
     let rebuilt = parts.reassembled(keptTokens: keptTokens)
-    let cleaned = URL(string: rebuilt) ?? url
+    // A spliced remainder that no longer parses must not masquerade as a modified result.
+    guard let cleaned = URL(string: rebuilt) else { return .unchanged(url) }
     return CleanResult(cleanedURL: cleaned, removedParameterNames: removedNames, wasModified: true)
   }
 

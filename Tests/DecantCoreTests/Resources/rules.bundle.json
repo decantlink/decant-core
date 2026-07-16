@@ -110,8 +110,8 @@
         {
           "type": "removeParameters",
           "select": {
-            "names": ["tag", "ref", "ref_", "psc", "qid", "sr", "keywords", "sprefix",
-                      "crid", "dib", "dib_tag", "th", "pf", "linkCode", "linkId", "camp",
+            "names": ["tag", "ref", "ref_", "qid", "sr", "keywords", "sprefix",
+                      "crid", "dib", "dib_tag", "pf", "linkCode", "linkId", "camp",
                       "creative", "creativeASIN", "ascsubtag", "smid", "spLa", "sp_csd"]
           }
         },

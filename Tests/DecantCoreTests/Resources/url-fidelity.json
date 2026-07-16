@@ -125,6 +125,22 @@
       "expected": "https://example.com/p?q=1&page=2",
       "removed": [],
       "modified": false
+    },
+    {
+      "name": "empty-token-kept-verbatim",
+      "input": "https://example.com/p?utm_source=x&&q=1",
+      "expected": "https://example.com/p?&q=1",
+      "removed": ["utm_source"],
+      "modified": true,
+      "note": "An empty token (from '&&') is not a parameter: never counted as removed, kept byte-verbatim."
+    },
+    {
+      "name": "empty-token-under-keeponly",
+      "input": "https://www.youtube.com/watch?v=abc&&si=XYZ",
+      "expected": "https://www.youtube.com/watch?v=abc&",
+      "removed": ["si"],
+      "modified": true,
+      "note": "keepOnly must not report the empty token as a removed parameter."
     }
   ]
 }

@@ -21,8 +21,9 @@ public struct RuleCompiler {
         global.fold(rule)
       case .host(let exact, let suffix):
         let compiled = CompiledRule(rule)
-        for host in exact { byExact[host, default: []].append(compiled) }
-        for host in suffix { bySuffix[host, default: []].append(compiled) }
+        // clean() probes with a lowercased URL host; normalize authored literals to match.
+        for host in exact { byExact[host.lowercased(), default: []].append(compiled) }
+        for host in suffix { bySuffix[host.lowercased(), default: []].append(compiled) }
       case .hostRegex(let pattern):
         hostRegexRules.append((CompiledRegex(pattern), CompiledRule(rule)))
       }
