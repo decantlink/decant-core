@@ -96,7 +96,7 @@
     {
       "id": "shopping.amazon",
       "name": "Amazon tracking",
-      "description": "Affiliate tags, referral and session params across Amazon marketplaces. ccTLDs enumerated (no PSL).",
+      "description": "Affiliate tags, referral and session params across Amazon marketplaces. ccTLDs enumerated (no PSL). th/psc deliberately KEPT: they select the displayed product variant — stripping them changes what the recipient sees.",
       "matcher": {
         "type": "host",
         "suffix": [
