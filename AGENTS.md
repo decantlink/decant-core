@@ -33,10 +33,10 @@ Products: `DecantCore` (pure) + `DecantCoreFoundation` (Apple crypto adapter). P
 
 ## Contracts
 
-- Engine API → **canonical here**: `RuleEngine.clean(_:) -> CleanResult`. (`decant-apple` ships a temporary stub copy of this seam; this repo is the source of truth.)
+- Engine API → **canonical here**: `RuleEngine.clean(_:) -> CleanResult` — the public seam consumers depend on.
 - Rule data format → **consumed from** `decant-rules/SCHEMA.md` + `schema/*.json`. Don't redefine the schema here; conform the decoder/validator to it.
 
 ## Pointers
-- Current state: `~/.agents/memories/Decant/SUMMARY.md` · Decisions: vault Bible §12 · Cross-repo map: `decant-meta/AGENTS.md`.
+- Engine rationale + invariants: `DESIGN.md`. Rule data contract: `decant-rules` (`SCHEMA.md`).
 
 <!-- Update on: public API change, new target/product, changed schema conformance, new test resource. -->
