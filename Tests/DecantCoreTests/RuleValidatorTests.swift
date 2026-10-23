@@ -1,11 +1,14 @@
 import Foundation
 import Testing
+
 @testable import DecantCore
 
 /// Gate 2: RuleValidator — semantic rejection of unanchored/uncompilable hostRegex and degenerate
 /// host matchers; redundant removeAll warns but keeps the rule.
 struct RuleValidatorTests {
-  private func rule(id: String, matcher: Rule.Matcher, actions: [Rule.Action] = [.removeAllParameters]) -> Rule {
+  private func rule(
+    id: String, matcher: Rule.Matcher, actions: [Rule.Action] = [.removeAllParameters]
+  ) -> Rule {
     Rule(id: id, name: id, matcher: matcher, actions: actions, source: .builtIn)
   }
 
@@ -40,7 +43,9 @@ struct RuleValidatorTests {
 
   @Test func redundantRemoveAllWarnsButKeeps() {
     let rules = [
-      rule(id: "a.b", matcher: .any, actions: [.removeAllParameters, .removeParameters(.prefix("utm_"))])
+      rule(
+        id: "a.b", matcher: .any,
+        actions: [.removeAllParameters, .removeParameters(.prefix("utm_"))])
     ]
     let (accepted, diagnostics) = RuleValidator.validate(rules)
     #expect(accepted.count == 1)

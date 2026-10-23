@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import DecantCore
 
 /// Rule-data QA: cleaning must never change what the recipient sees. Splice mechanics are covered
@@ -31,9 +32,11 @@ struct SemanticSafetyTests {
     for testCase in cases {
       let input = try #require(URL(string: testCase.input), "bad fixture URL: \(testCase.name)")
       let result = engine.clean(input)
-      #expect(result.cleanedURL.absoluteString == testCase.expected, "url mismatch: \(testCase.name)")
+      #expect(
+        result.cleanedURL.absoluteString == testCase.expected, "url mismatch: \(testCase.name)")
       #expect(result.wasModified == testCase.modified, "modified mismatch: \(testCase.name)")
-      #expect(result.removedParameterNames == testCase.removed, "removed mismatch: \(testCase.name)")
+      #expect(
+        result.removedParameterNames == testCase.removed, "removed mismatch: \(testCase.name)")
     }
   }
 }

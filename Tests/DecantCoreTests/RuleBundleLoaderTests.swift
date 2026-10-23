@@ -1,8 +1,9 @@
 import CryptoKit
+import DecantCoreFoundation
 import Foundation
 import Testing
+
 @testable import DecantCore
-import DecantCoreFoundation
 
 /// Gate 4: RuleBundleLoader + Ed25519 verifier — tampered bytes reject, rollback rejects, a valid
 /// signed bundle loads. Uses a throwaway keypair generated per run.
@@ -35,7 +36,7 @@ struct RuleBundleLoaderTests {
     let loader = try makeLoader(publicKey: key.publicKey)
 
     var tampered = bytes
-    tampered.append(0x20) // trailing space invalidates the signature over the original bytes
+    tampered.append(0x20)  // trailing space invalidates the signature over the original bytes
     #expect(throws: RuleBundleLoader.LoadError.badSignature) {
       try loader.load(bundleBytes: tampered, signature: signature, cachedGeneration: nil)
     }
@@ -55,7 +56,7 @@ struct RuleBundleLoaderTests {
 
   @Test func nonAdvancingGenerationRejected() throws {
     let key = Curve25519.Signing.PrivateKey()
-    let bytes = try seedBytes() // generation == 1
+    let bytes = try seedBytes()  // generation == 1
     let signature = try key.signature(for: bytes)
     let loader = try makeLoader(publicKey: key.publicKey)
 
@@ -69,7 +70,7 @@ struct RuleBundleLoaderTests {
 
   @Test func advancingGenerationAccepted() throws {
     let key = Curve25519.Signing.PrivateKey()
-    let bytes = try seedBytes() // generation == 1
+    let bytes = try seedBytes()  // generation == 1
     let signature = try key.signature(for: bytes)
     let loader = try makeLoader(publicKey: key.publicKey)
 
@@ -80,11 +81,11 @@ struct RuleBundleLoaderTests {
   @Test func newerSchemaVersionDegradesGracefullyWithWarning() throws {
     // A future bundle whose rules still parse under v1 grammar: load best-effort, warn, don't throw.
     let json = """
-    { "schemaVersion": 2, "generation": 3, "generatedAt": "2026-06-26T00:00:00Z", "rules": [
-      { "id": "tracking.utm", "name": "UTM", "matcher": { "type": "any" },
-        "actions": [ { "type": "removeParameters", "select": { "prefix": "utm_" } } ], "source": "builtIn" }
-    ] }
-    """
+      { "schemaVersion": 2, "generation": 3, "generatedAt": "2026-06-26T00:00:00Z", "rules": [
+        { "id": "tracking.utm", "name": "UTM", "matcher": { "type": "any" },
+          "actions": [ { "type": "removeParameters", "select": { "prefix": "utm_" } } ], "source": "builtIn" }
+      ] }
+      """
     let key = Curve25519.Signing.PrivateKey()
     let bytes = Data(json.utf8)
     let signature = try key.signature(for: bytes)

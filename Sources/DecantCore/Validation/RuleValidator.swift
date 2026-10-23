@@ -17,13 +17,15 @@ public struct RuleValidator {
   /// Validates a list of rules.
   /// - Parameter rules: The decoded rules to check.
   /// - Returns: The rules that passed, plus diagnostics for every rejected rule and every warning.
-  public static func validate(_ rules: [Rule]) -> (accepted: [Rule], diagnostics: [RuleDiagnostic]) {
+  public static func validate(_ rules: [Rule]) -> (accepted: [Rule], diagnostics: [RuleDiagnostic])
+  {
     var accepted: [Rule] = []
     var diagnostics: [RuleDiagnostic] = []
 
     for rule in rules {
       if let rejection = rejectionReason(for: rule.matcher) {
-        diagnostics.append(RuleDiagnostic(ruleID: rule.id, severity: .skippedRule, message: rejection))
+        diagnostics.append(
+          RuleDiagnostic(ruleID: rule.id, severity: .skippedRule, message: rejection))
         continue
       }
       if hasRedundantRemoveAll(rule.actions) {
@@ -59,8 +61,12 @@ public struct RuleValidator {
   }
 
   private static func hasRedundantRemoveAll(_ actions: [Rule.Action]) -> Bool {
-    let hasRemoveAll = actions.contains { if case .removeAllParameters = $0 { true } else { false } }
-    let hasRemoveParams = actions.contains { if case .removeParameters = $0 { true } else { false } }
+    let hasRemoveAll = actions.contains {
+      if case .removeAllParameters = $0 { true } else { false }
+    }
+    let hasRemoveParams = actions.contains {
+      if case .removeParameters = $0 { true } else { false }
+    }
     return hasRemoveAll && hasRemoveParams
   }
 }

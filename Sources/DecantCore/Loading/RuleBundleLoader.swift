@@ -37,7 +37,8 @@ public struct RuleBundleLoader {
   /// - Returns: The decoded ``RuleBundle`` (its ``RuleBundle/decodeDiagnostics`` lists any rules
   ///   dropped for being un-understood — those never fail the load).
   /// - Throws: ``LoadError`` on signature failure, malformed JSON, unsupported schema, or rollback.
-  public func load(bundleBytes: Data, signature: Data, cachedGeneration: Int?) throws -> RuleBundle {
+  public func load(bundleBytes: Data, signature: Data, cachedGeneration: Int?) throws -> RuleBundle
+  {
     guard verifier.verify(signature, of: bundleBytes) else {
       throw LoadError.badSignature
     }

@@ -28,10 +28,15 @@ public struct RuleBundle: Codable, Sendable {
 
   /// Memberwise initializer (no diagnostics).
   public init(schemaVersion: Int, generation: Int, generatedAt: String, rules: [Rule]) {
-    self.init(schemaVersion: schemaVersion, generation: generation, generatedAt: generatedAt, rules: rules, decodeDiagnostics: [])
+    self.init(
+      schemaVersion: schemaVersion, generation: generation, generatedAt: generatedAt, rules: rules,
+      decodeDiagnostics: [])
   }
 
-  init(schemaVersion: Int, generation: Int, generatedAt: String, rules: [Rule], decodeDiagnostics: [RuleDiagnostic]) {
+  init(
+    schemaVersion: Int, generation: Int, generatedAt: String, rules: [Rule],
+    decodeDiagnostics: [RuleDiagnostic]
+  ) {
     self.schemaVersion = schemaVersion
     self.generation = generation
     self.generatedAt = generatedAt

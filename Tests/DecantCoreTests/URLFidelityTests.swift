@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import DecantCore
 
 /// Gate 3: surgical splice — every case in `fixtures/url-fidelity.json` must pass byte-exact, with
@@ -33,10 +34,13 @@ struct URLFidelityTests {
     for testCase in try loadCases() {
       let input = try #require(URL(string: testCase.input), "bad fixture URL: \(testCase.name)")
       let result = engine.clean(input)
-      #expect(result.cleanedURL.absoluteString == testCase.expected, "url mismatch: \(testCase.name)")
+      #expect(
+        result.cleanedURL.absoluteString == testCase.expected, "url mismatch: \(testCase.name)")
       #expect(result.wasModified == testCase.modified, "modified mismatch: \(testCase.name)")
-      #expect(result.removedParameterNames == testCase.removed, "removed mismatch: \(testCase.name)")
-      #expect(result.removedParameterCount == testCase.removed.count, "count mismatch: \(testCase.name)")
+      #expect(
+        result.removedParameterNames == testCase.removed, "removed mismatch: \(testCase.name)")
+      #expect(
+        result.removedParameterCount == testCase.removed.count, "count mismatch: \(testCase.name)")
     }
   }
 }

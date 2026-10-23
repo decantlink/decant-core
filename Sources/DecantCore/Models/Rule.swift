@@ -95,7 +95,8 @@ public struct Rule: Codable, Equatable, Sendable {
 
   /// Taxonomy bucket for a rule.
   public enum Category: String, Codable, Sendable {
-    case tracking, affiliate, session, analytics, social, shopping, advertising, urlRewriting, appRouting, custom
+    case tracking, affiliate, session, analytics, social, shopping, advertising, urlRewriting,
+      appRouting, custom
   }
 
   private enum CodingKeys: String, CodingKey {
