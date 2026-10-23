@@ -25,6 +25,18 @@ Tests/DecantCoreTests/        model decoding, bundle loader, validator, URL-fide
 
 Products: `DecantCore` (pure) + `DecantCoreFoundation` (Apple crypto adapter). Platforms macOS 13 / iOS 16+.
 
+## Preflight
+
+Before every push, both must pass:
+
+```
+xcrun swift-format lint --recursive --strict Sources Tests
+swift test
+```
+
+`mise run preflight` runs the same two commands; `mise run install-hooks` installs a git pre-push hook that does so
+automatically. Formatting rules live in `.swift-format`.
+
 ## Conventions
 
 - `DecantCore` stays **crypto-free and platform-free** — anything needing CryptoKit/Apple SDKs goes in `DecantCoreFoundation`.

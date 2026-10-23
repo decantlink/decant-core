@@ -1,3 +1,24 @@
 [tasks.lint]
 description = "Check Swift formatting with swift-format (Xcode toolchain)"
 run = "xcrun swift-format lint --recursive --strict Sources Tests"
+
+[tasks.test]
+description = "Run the package tests"
+run = "swift test"
+
+[tasks.preflight]
+description = "Checks that must pass before every push: lint, then tests"
+depends = ["lint", "test"]
+
+[tasks.install-hooks]
+description = "Install the git pre-push hook that runs preflight"
+run = """
+hook="$(git rev-parse --git-path hooks)/pre-push"
+mkdir -p "$(dirname "$hook")"
+if [ -e "$hook" ] && ! grep -q 'mise run preflight' "$hook"; then
+  echo "refusing to overwrite existing $hook" >&2
+  exit 1
+fi
+printf '#!/bin/sh\\nexec mise run preflight\\n' > "$hook"
+chmod +x "$hook"
+"""
