@@ -1,0 +1,3 @@
+[tasks.lint]
+description = "Check Swift formatting with swift-format (Xcode toolchain)"
+run = "xcrun swift-format lint --recursive --strict Sources Tests"
