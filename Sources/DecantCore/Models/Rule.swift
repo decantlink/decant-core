@@ -17,7 +17,7 @@ public struct Rule: Codable, Equatable, Sendable {
   public let name: String
   /// Optional longer description, including any source attribution.
   public let description: String?
-  /// The host-scoping predicate that decides whether this rule applies to a URL.
+  /// The host (and optionally path) predicate that decides whether this rule applies to a URL.
   public let matcher: Matcher
   /// The ordered clean actions to apply when the matcher matches. v1 actions are commutative.
   public let actions: [Action]
@@ -57,13 +57,16 @@ public struct Rule: Codable, Equatable, Sendable {
     self.version = version
   }
 
-  /// Host-scoping predicate. Tagged union: `any` | `host` | `hostRegex`.
+  /// Scoping predicate. Tagged union: `any` | `host` | `hostPath` | `hostRegex`.
   public enum Matcher: Codable, Equatable, Sendable {
     /// Matches every URL. Folded into the global parameter-removal index at compile time.
     case any
     /// Label-boundary host match. `exact` requires `H == D`; `suffix` requires `H == D` or
     /// `H` ends with `"." + D`. A matcher carries at least one of the two lists.
     case host(exact: [String], suffix: [String])
+    /// A ``host(exact:suffix:)`` match narrowed by the raw percent-encoded path `X` (`/` if empty):
+    /// prefix `P` matches iff `X == P` or `X` starts with `P + "/"` (or `P`, if it ends in `/`).
+    case hostPath(exact: [String], suffix: [String], pathPrefixes: [String])
     /// Anchored host-regex escape hatch (validated to be `^…$` by ``RuleValidator``).
     case hostRegex(String)
   }

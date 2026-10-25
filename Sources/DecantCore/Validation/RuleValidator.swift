@@ -11,6 +11,8 @@ import Foundation
 ///   `amazon.com.phishing.ru` (`SCHEMA.md` §3). The pattern must be `^…$`.
 /// - **Uncompilable `hostRegex`** is rejected (it can never match).
 /// - **Degenerate `host`** with neither `exact` nor `suffix` literals is rejected (matches nothing).
+/// - **Degenerate `hostPath`**: no host literals, no path prefixes, or a prefix that does not start
+///   with `/` or contains `?`/`#` (it could never equal a URL path) is rejected.
 /// - **`removeAllParameters` alongside `removeParameters`** earns a ``RuleDiagnostic/Severity/warning``
 ///   (the latter is subsumed), but the rule is kept.
 public struct RuleValidator {
@@ -49,6 +51,18 @@ public struct RuleValidator {
       return nil
     case .host(let exact, let suffix):
       return exact.isEmpty && suffix.isEmpty ? "host matcher has no exact or suffix literals" : nil
+    case .hostPath(let exact, let suffix, let pathPrefixes):
+      if exact.isEmpty && suffix.isEmpty {
+        return "hostPath matcher has no exact or suffix literals"
+      }
+      if pathPrefixes.isEmpty { return "hostPath matcher has no path prefixes" }
+      let invalid = pathPrefixes.first {
+        !$0.hasPrefix("/") || $0.contains("?") || $0.contains("#")
+      }
+      if let invalid {
+        return "hostPath prefix must start with '/' and contain no '?' or '#': '\(invalid)'"
+      }
+      return nil
     case .hostRegex(let pattern):
       guard pattern.hasPrefix("^"), pattern.hasSuffix("$"), pattern.count >= 2 else {
         return "hostRegex pattern must be anchored (^…$): '\(pattern)'"

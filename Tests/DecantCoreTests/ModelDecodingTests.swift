@@ -74,6 +74,44 @@ struct ModelDecodingTests {
     #expect(bundle.decodeDiagnostics.first?.severity == .skippedRule)
   }
 
+  @Test func hostPathRoundTrips() throws {
+    let json = """
+      { "id": "a.b", "name": "share paths", "source": "builtIn",
+        "matcher": { "type": "hostPath", "exact": ["instagram.com"], "suffix": ["example.com"],
+                     "path": { "prefix": ["/reel", "/p/"] } },
+        "actions": [ { "type": "removeAllParameters" } ] }
+      """
+    let rule = try JSONDecoder().decode(Rule.self, from: Data(json.utf8))
+    let expected = Rule.Matcher.hostPath(
+      exact: ["instagram.com"], suffix: ["example.com"], pathPrefixes: ["/reel", "/p/"])
+    #expect(rule.matcher == expected)
+
+    let encoded = try JSONEncoder().encode(rule)
+    let object = try #require(try JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+    let matcher = try #require(object["matcher"] as? [String: Any])
+    #expect(matcher["type"] as? String == "hostPath")
+    #expect((matcher["path"] as? [String: Any])?["prefix"] as? [String] == ["/reel", "/p/"])
+    #expect(try JSONDecoder().decode(Rule.self, from: encoded) == rule)
+  }
+
+  @Test(arguments: [
+    #"{ "type": "hostPath", "exact": ["a.com"] }"#,
+    #"{ "type": "hostPath", "exact": ["a.com"], "path": {} }"#,
+    #"{ "type": "hostPath", "exact": ["a.com"], "path": { "prefix": ["/r"], "pattern": "^/r$" } }"#,
+  ])
+  func malformedHostPathDropsRuleWithDiagnostic(matcherJSON: String) throws {
+    let json = """
+      { "schemaVersion": 1, "generation": 2, "generatedAt": "2026-06-24T00:00:00Z", "rules": [
+        { "id": "bad.path", "name": "x", "matcher": \(matcherJSON),
+          "actions": [ { "type": "removeAllParameters" } ], "source": "builtIn" }
+      ] }
+      """
+    let bundle = try JSONDecoder().decode(RuleBundle.self, from: Data(json.utf8))
+    #expect(bundle.rules.isEmpty)
+    #expect(bundle.decodeDiagnostics.first?.ruleID == "bad.path")
+    #expect(bundle.decodeDiagnostics.first?.severity == .skippedRule)
+  }
+
   @Test func unknownActionTypeDropsRuleWithDiagnostic() throws {
     let json = """
       { "schemaVersion": 1, "generation": 2, "generatedAt": "2026-06-24T00:00:00Z", "rules": [

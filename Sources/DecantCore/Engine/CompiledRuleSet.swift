@@ -7,6 +7,7 @@ import Foundation
 /// - `global` is the fold of every `any` rule (computed once).
 /// - `bySuffix` / `byExact` map each declared host literal to the rules registered under it; a URL's
 ///   host is matched by probing its ≤~4 label-suffixes (plus an exact probe), never the whole map.
+///   `hostPath` rules live here too and are then filtered by the URL path.
 /// - `hostRegexRules` is the small, audited list matched linearly.
 ///
 /// Cleaning is a **surgical splice** on the raw query substring (see ``URLParts``); kept parameters
@@ -37,7 +38,13 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
     var removals = global
     if let host = url.host(percentEncoded: false)?.lowercased() {
       var seen = Set<String>()
+      var path: String?
       func consider(_ compiled: CompiledRule) {
+        if compiled.pathPrefixes != nil {
+          let resolved = path ?? Self.matchPath(of: url)
+          path = resolved
+          guard compiled.admits(path: resolved) else { return }
+        }
         if seen.insert(compiled.id).inserted { removals.merge(compiled.removal) }
       }
       byExact[host]?.forEach(consider)
@@ -71,6 +78,12 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
     // A spliced remainder that no longer parses must not masquerade as a modified result.
     guard let cleaned = URL(string: rebuilt) else { return .unchanged(url) }
     return CleanResult(cleanedURL: cleaned, removedParameterNames: removedNames, wasModified: true)
+  }
+
+  /// The path `hostPath` matches against: percent-encoded, not dot-normalized, `/` if empty.
+  static func matchPath(of url: URL) -> String {
+    let path = url.path(percentEncoded: true)
+    return path.isEmpty ? "/" : path
   }
 
   /// The label-boundary suffixes of a host, longest first: `www.amazon.co.uk` →

@@ -12,11 +12,14 @@ enum RuleDecodingError: Error, CustomStringConvertible {
   case unknownActionType(String)
   /// A `select` object did not contain exactly one of `names`/`prefix`/`regex`/`keepOnly`.
   case invalidSelector
+  /// A `hostPath` matcher's `path` object has a key this engine version does not understand.
+  case unknownPathKey(String)
 
   var description: String {
     switch self {
     case .unknownMatcherType(let t): "unknown matcher type '\(t)'"
     case .unknownActionType(let t): "unknown action type '\(t)'"
+    case .unknownPathKey(let k): "unknown hostPath path key '\(k)'"
     case .invalidSelector: "selector must contain exactly one of names/prefix/regex/keepOnly"
     }
   }

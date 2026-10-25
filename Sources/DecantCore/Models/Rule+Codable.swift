@@ -6,7 +6,16 @@ import Foundation
 // object (selector). Synthesized Codable cannot express these shapes, so each is hand-written.
 
 extension Rule.Matcher {
-  private enum CodingKeys: String, CodingKey { case type, exact, suffix, pattern }
+  private enum CodingKeys: String, CodingKey { case type, exact, suffix, path, pattern }
+
+  /// Accepts any key so `init(from:)` can see, and reject, keys it does not know inside `path`.
+  private struct PathKey: CodingKey {
+    static let prefix = PathKey(stringValue: "prefix")
+    let stringValue: String
+    var intValue: Int? { nil }
+    init(stringValue: String) { self.stringValue = stringValue }
+    init?(intValue: Int) { return nil }
+  }
 
   public init(from decoder: Decoder) throws {
     let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -18,6 +27,16 @@ extension Rule.Matcher {
       let exact = try c.decodeIfPresent([String].self, forKey: .exact) ?? []
       let suffix = try c.decodeIfPresent([String].self, forKey: .suffix) ?? []
       self = .host(exact: exact, suffix: suffix)
+    case "hostPath":
+      let exact = try c.decodeIfPresent([String].self, forKey: .exact) ?? []
+      let suffix = try c.decodeIfPresent([String].self, forKey: .suffix) ?? []
+      let path = try c.nestedContainer(keyedBy: PathKey.self, forKey: .path)
+      // An unknown path key may narrow scope in a newer schema; ignoring it would widen the rule.
+      if let unknown = path.allKeys.first(where: { $0.stringValue != PathKey.prefix.stringValue }) {
+        throw RuleDecodingError.unknownPathKey(unknown.stringValue)
+      }
+      let prefixes = try path.decode([String].self, forKey: .prefix)
+      self = .hostPath(exact: exact, suffix: suffix, pathPrefixes: prefixes)
     case "hostRegex":
       self = .hostRegex(try c.decode(String.self, forKey: .pattern))
     default:
@@ -34,6 +53,12 @@ extension Rule.Matcher {
       try c.encode("host", forKey: .type)
       if !exact.isEmpty { try c.encode(exact, forKey: .exact) }
       if !suffix.isEmpty { try c.encode(suffix, forKey: .suffix) }
+    case .hostPath(let exact, let suffix, let pathPrefixes):
+      try c.encode("hostPath", forKey: .type)
+      if !exact.isEmpty { try c.encode(exact, forKey: .exact) }
+      if !suffix.isEmpty { try c.encode(suffix, forKey: .suffix) }
+      var path = c.nestedContainer(keyedBy: PathKey.self, forKey: .path)
+      try path.encode(pathPrefixes, forKey: .prefix)
     case .hostRegex(let pattern):
       try c.encode("hostRegex", forKey: .type)
       try c.encode(pattern, forKey: .pattern)

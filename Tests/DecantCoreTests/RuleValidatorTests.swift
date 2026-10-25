@@ -41,6 +41,27 @@ struct RuleValidatorTests {
     #expect(diagnostics.first?.severity == .skippedRule)
   }
 
+  @Test(arguments: [
+    Rule.Matcher.hostPath(exact: [], suffix: [], pathPrefixes: ["/reel"]),
+    .hostPath(exact: ["a.com"], suffix: [], pathPrefixes: []),
+    .hostPath(exact: ["a.com"], suffix: [], pathPrefixes: ["reel"]),
+    .hostPath(exact: ["a.com"], suffix: [], pathPrefixes: ["/reel", ""]),
+    .hostPath(exact: ["a.com"], suffix: [], pathPrefixes: ["/reel?x=1"]),
+    .hostPath(exact: ["a.com"], suffix: [], pathPrefixes: ["/reel#top"]),
+  ])
+  func degenerateHostPathRejected(matcher: Rule.Matcher) {
+    let (accepted, diagnostics) = RuleValidator.validate([rule(id: "a.b", matcher: matcher)])
+    #expect(accepted.isEmpty)
+    #expect(diagnostics.first?.severity == .skippedRule)
+  }
+
+  @Test func hostPathAccepted() {
+    let matcher = Rule.Matcher.hostPath(exact: [], suffix: ["a.com"], pathPrefixes: ["/reel"])
+    let (accepted, diagnostics) = RuleValidator.validate([rule(id: "a.b", matcher: matcher)])
+    #expect(accepted.count == 1)
+    #expect(diagnostics.isEmpty)
+  }
+
   @Test func redundantRemoveAllWarnsButKeeps() {
     let rules = [
       rule(

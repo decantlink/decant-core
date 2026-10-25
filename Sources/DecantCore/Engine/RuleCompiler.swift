@@ -19,7 +19,7 @@ public struct RuleCompiler {
       switch rule.matcher {
       case .any:
         global.fold(rule)
-      case .host(let exact, let suffix):
+      case .host(let exact, let suffix), .hostPath(let exact, let suffix, _):
         let compiled = CompiledRule(rule)
         // clean() probes with a lowercased URL host; normalize authored literals to match.
         for host in exact { byExact[host.lowercased(), default: []].append(compiled) }
@@ -45,11 +45,27 @@ public struct RuleCompiler {
 struct CompiledRule: Sendable {
   let id: String
   let removal: ParamRemovalSet
+  /// The `hostPath` prefixes the URL path must fall under; `nil` means any path.
+  let pathPrefixes: [String]?
 
   init(_ rule: Rule) {
     id = rule.id
     var set = ParamRemovalSet()
     set.fold(rule)
     removal = set
+    if case .hostPath(_, _, let prefixes) = rule.matcher {
+      pathPrefixes = prefixes
+    } else {
+      pathPrefixes = nil
+    }
+  }
+
+  func admits(path: String) -> Bool {
+    guard let pathPrefixes else { return true }
+    // Compare UTF-8 bytes: String equality would treat canonically-equivalent Unicode as equal.
+    return pathPrefixes.contains { prefix in
+      let boundary = prefix.hasSuffix("/") ? prefix : prefix + "/"
+      return path.utf8.elementsEqual(prefix.utf8) || path.utf8.starts(with: boundary.utf8)
+    }
   }
 }
