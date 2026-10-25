@@ -55,6 +55,17 @@
       "category": "social"
     },
     {
+      "id": "social.instagram-web",
+      "name": "Instagram share tokens",
+      "description": "Shared links carry a share token under a rotating random parameter name, so a name list cannot keep up. Keep only functional params: hl (UI language), img_index (carousel slide), next (post-login redirect), q (keyword search), variant (Following/Favorites feed). Exact hosts only: l.instagram.com is a redirect wrapper whose u must survive.",
+      "matcher": { "type": "host", "exact": ["instagram.com", "www.instagram.com"] },
+      "actions": [
+        { "type": "removeParameters", "select": { "keepOnly": ["hl", "img_index", "next", "q", "variant"] } }
+      ],
+      "source": "builtIn",
+      "category": "social"
+    },
+    {
       "id": "social.facebook",
       "name": "Facebook tracking",
       "description": "Action/referrer/notification tracking on Facebook hosts. fbclid handled globally.",

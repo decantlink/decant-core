@@ -57,7 +57,7 @@ struct RuleValidatorTests {
     let url = try #require(Bundle.module.url(forResource: "rules.bundle", withExtension: "json"))
     let bundle = try JSONDecoder().decode(RuleBundle.self, from: Data(contentsOf: url))
     let (accepted, diagnostics) = RuleValidator.validate(bundle.rules)
-    #expect(accepted.count == 8)
+    #expect(accepted.count == 9)
     #expect(diagnostics.isEmpty)
   }
 }

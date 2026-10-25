@@ -10,15 +10,16 @@ struct ModelDecodingTests {
     return try Data(contentsOf: url)
   }
 
-  @Test func decodesSeedBundleToEightRules() throws {
+  @Test func decodesSeedBundleToNineRules() throws {
     let bundle = try JSONDecoder().decode(RuleBundle.self, from: loadSeedBundleData())
     #expect(bundle.schemaVersion == 1)
     #expect(bundle.generation == 1)
-    #expect(bundle.rules.count == 8)
+    #expect(bundle.rules.count == 9)
     #expect(bundle.decodeDiagnostics.isEmpty)
     #expect(
       bundle.rules.map(\.id) == [
         "tracking.utm", "tracking.click-ids", "social.twitter", "social.instagram",
+        "social.instagram-web",
         "social.facebook", "social.tiktok", "social.youtube", "shopping.amazon",
       ])
   }

@@ -25,7 +25,7 @@ struct RuleBundleLoaderTests {
     let loader = try makeLoader(publicKey: key.publicKey)
 
     let bundle = try loader.load(bundleBytes: bytes, signature: signature, cachedGeneration: nil)
-    #expect(bundle.rules.count == 8)
+    #expect(bundle.rules.count == 9)
     #expect(bundle.generation == 1)
   }
 

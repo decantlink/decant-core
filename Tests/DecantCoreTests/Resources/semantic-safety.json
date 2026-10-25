@@ -36,6 +36,107 @@
       "expected": "https://example.com/list?page=3&sort=asc",
       "removed": [],
       "modified": false
+    },
+    {
+      "name": "instagram-rotating-share-token-1",
+      "input": "https://www.instagram.com/reel/DuS7ZdT1w9F/?bfcy=YmU0eWVtN2ppMGFveA==",
+      "expected": "https://www.instagram.com/reel/DuS7ZdT1w9F/",
+      "removed": ["bfcy"],
+      "modified": true,
+      "note": "Synthetic. Instagram shares carry a base64 share token under a random 4-letter name that rotates per share; the same token appears under several names (cases 1-3)."
+    },
+    {
+      "name": "instagram-rotating-share-token-2",
+      "input": "https://www.instagram.com/reel/DuS7ZdT1w9F/?eofg=YmU0eWVtN2ppMGFveA==",
+      "expected": "https://www.instagram.com/reel/DuS7ZdT1w9F/",
+      "removed": ["eofg"],
+      "modified": true
+    },
+    {
+      "name": "instagram-rotating-share-token-3",
+      "input": "https://www.instagram.com/reel/DuS7ZdT1w9F/?esdx=YmU0eWVtN2ppMGFveA==",
+      "expected": "https://www.instagram.com/reel/DuS7ZdT1w9F/",
+      "removed": ["esdx"],
+      "modified": true
+    },
+    {
+      "name": "instagram-rotating-share-token-4",
+      "input": "https://www.instagram.com/reel/DWBnJZ677Yk/?hzyi=OHFrdmxzOWJnZm0zZg==",
+      "expected": "https://www.instagram.com/reel/DWBnJZ677Yk/",
+      "removed": ["hzyi"],
+      "modified": true
+    },
+    {
+      "name": "instagram-rotating-share-token-5",
+      "input": "https://www.instagram.com/reel/DnUslKAV5Ug/?omyh=ZHJ1cWxlYmRpZmJl",
+      "expected": "https://www.instagram.com/reel/DnUslKAV5Ug/",
+      "removed": ["omyh"],
+      "modified": true
+    },
+    {
+      "name": "instagram-rotating-share-token-6",
+      "input": "https://www.instagram.com/reel/DhidJ0jAX83/?rktp=dWx3MGF4YmU1N3No",
+      "expected": "https://www.instagram.com/reel/DhidJ0jAX83/",
+      "removed": ["rktp"],
+      "modified": true
+    },
+    {
+      "name": "instagram-bare-host-share-token-stripped",
+      "input": "https://instagram.com/reel/DWBnJZ677Yk/?udzi=djFjbnczaGZsd2cydw==&igsh=MTIzYWJj",
+      "expected": "https://instagram.com/reel/DWBnJZ677Yk/",
+      "removed": ["udzi", "igsh"],
+      "modified": true
+    },
+    {
+      "name": "instagram-carousel-slide-kept",
+      "input": "https://www.instagram.com/p/DIy9SJICx76/?img_index=3&yyfu=ZHJ1cWxlYmRpZmJl",
+      "expected": "https://www.instagram.com/p/DIy9SJICx76/?img_index=3",
+      "removed": ["yyfu"],
+      "modified": true,
+      "note": "img_index opens the carousel at that slide."
+    },
+    {
+      "name": "instagram-keyword-search-kept",
+      "input": "https://www.instagram.com/explore/search/keyword/?q=coffee&bfcy=OHFrdmxzOWJnZm0zZg==",
+      "expected": "https://www.instagram.com/explore/search/keyword/?q=coffee",
+      "removed": ["bfcy"],
+      "modified": true
+    },
+    {
+      "name": "instagram-login-redirect-kept",
+      "input": "https://www.instagram.com/accounts/login/?next=https%3A%2F%2Fwww.instagram.com%2Faccounts%2Fedit%2F",
+      "expected": "https://www.instagram.com/accounts/login/?next=https%3A%2F%2Fwww.instagram.com%2Faccounts%2Fedit%2F",
+      "removed": [],
+      "modified": false
+    },
+    {
+      "name": "instagram-feed-variant-kept",
+      "input": "https://www.instagram.com/?variant=following",
+      "expected": "https://www.instagram.com/?variant=following",
+      "removed": [],
+      "modified": false
+    },
+    {
+      "name": "instagram-ui-language-kept",
+      "input": "https://www.instagram.com/?hl=pt",
+      "expected": "https://www.instagram.com/?hl=pt",
+      "removed": [],
+      "modified": false
+    },
+    {
+      "name": "instagram-link-shim-target-kept",
+      "input": "https://l.instagram.com/?u=https%3A%2F%2Fexample.com%2Fa&e=AT0sYnthetic",
+      "expected": "https://l.instagram.com/?u=https%3A%2F%2Fexample.com%2Fa&e=AT0sYnthetic",
+      "removed": [],
+      "modified": false,
+      "note": "l.instagram.com is a redirect wrapper; the allowlist is exact-host only so u survives."
+    },
+    {
+      "name": "instagram-share-id-removed-on-subdomain",
+      "input": "https://about.instagram.com/blog?igsh=MTIzYWJj",
+      "expected": "https://about.instagram.com/blog",
+      "removed": ["igsh"],
+      "modified": true
     }
   ]
 }
