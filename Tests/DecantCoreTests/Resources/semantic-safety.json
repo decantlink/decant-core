@@ -98,8 +98,46 @@
     {
       "name": "instagram-keyword-search-kept",
       "input": "https://www.instagram.com/explore/search/keyword/?q=coffee&bfcy=OHFrdmxzOWJnZm0zZg==",
-      "expected": "https://www.instagram.com/explore/search/keyword/?q=coffee",
-      "removed": ["bfcy"],
+      "expected": "https://www.instagram.com/explore/search/keyword/?q=coffee&bfcy=OHFrdmxzOWJnZm0zZg==",
+      "removed": [],
+      "modified": false,
+      "note": "Not a share path, so the allowlist does not apply and the token-shaped bfcy survives. Accepted under-removal: scoping the allowlist protects functional params on every other path."
+    },
+    {
+      "name": "instagram-reels-share-token-stripped",
+      "input": "https://www.instagram.com/reels/SynthReel01/?kqzt=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/reels/SynthReel01/",
+      "removed": ["kqzt"],
+      "modified": true
+    },
+    {
+      "name": "instagram-tv-share-token-stripped",
+      "input": "https://www.instagram.com/tv/SynthIgtv01/?wxpq=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/tv/SynthIgtv01/",
+      "removed": ["wxpq"],
+      "modified": true
+    },
+    {
+      "name": "instagram-share-prefix-is-segment-bounded",
+      "input": "https://www.instagram.com/reelsx/?kqzt=c3ludGhldGljLXRva2Vu",
+      "expected": "https://www.instagram.com/reelsx/?kqzt=c3ludGhldGljLXRva2Vu",
+      "removed": [],
+      "modified": false,
+      "note": "A profile whose username starts with a share prefix is not a share path: /reels matches /reels and /reels/..., never /reelsx."
+    },
+    {
+      "name": "instagram-password-reset-params-kept",
+      "input": "https://www.instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token",
+      "expected": "https://www.instagram.com/accounts/password/reset/confirm/?uidb36=synth1&token=synthetic-reset-token",
+      "removed": [],
+      "modified": false,
+      "note": "Functional params off share paths must survive byte-identical; a site-wide allowlist would break reset links."
+    },
+    {
+      "name": "instagram-share-id-removed-off-share-path",
+      "input": "https://www.instagram.com/someuser/?igsh=MTIzYWJj",
+      "expected": "https://www.instagram.com/someuser/",
+      "removed": ["igsh"],
       "modified": true
     },
     {
