@@ -175,6 +175,21 @@
       "expected": "https://about.instagram.com/blog",
       "removed": ["igsh"],
       "modified": true
+    },
+    {
+      "name": "facebook-share-link-mibextid-removed",
+      "input": "https://www.facebook.com/share/AbCd1234Ef/?mibextid=ZzYyXx",
+      "expected": "https://www.facebook.com/share/AbCd1234Ef/",
+      "removed": ["mibextid"],
+      "modified": true
+    },
+    {
+      "name": "facebook-story-ids-kept-with-mibextid",
+      "input": "https://www.facebook.com/story.php?story_fbid=pfbid0Synthetic&id=1000000000001&mibextid=ZzYyXx",
+      "expected": "https://www.facebook.com/story.php?story_fbid=pfbid0Synthetic&id=1000000000001",
+      "removed": ["mibextid"],
+      "modified": true,
+      "note": "story_fbid and id select the post; only the share identifier goes."
     }
   ]
 }

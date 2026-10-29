@@ -75,7 +75,7 @@
           "type": "removeParameters",
           "select": {
             "names": ["fb_action_ids", "fb_action_types", "fb_source", "fb_ref",
-                      "comment_tracking", "notif_t", "notif_id", "ref", "refsrc", "hrc"]
+                      "comment_tracking", "notif_t", "notif_id", "ref", "refsrc", "hrc", "mibextid"]
           }
         }
       ],
