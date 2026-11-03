@@ -190,6 +190,27 @@
       "removed": ["mibextid"],
       "modified": true,
       "note": "story_fbid and id select the post; only the share identifier goes."
+    },
+    {
+      "name": "x-status-share-token-a-removed",
+      "input": "https://x.com/someuser/status/1000000000000000001?a=SyntheticToken_01",
+      "expected": "https://x.com/someuser/status/1000000000000000001",
+      "removed": ["a"],
+      "modified": true
+    },
+    {
+      "name": "x-status-a-first-lang-kept",
+      "input": "https://x.com/someuser/status/1000000000000000001?a=SyntheticToken_01&lang=en",
+      "expected": "https://x.com/someuser/status/1000000000000000001?lang=en",
+      "removed": ["a"],
+      "modified": true
+    },
+    {
+      "name": "x-status-lang-first-a-removed",
+      "input": "https://x.com/someuser/status/1000000000000000001?lang=en&a=SyntheticToken_01",
+      "expected": "https://x.com/someuser/status/1000000000000000001?lang=en",
+      "removed": ["a"],
+      "modified": true
     }
   ]
 }

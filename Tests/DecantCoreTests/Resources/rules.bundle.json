@@ -38,7 +38,7 @@
       "description": "Share-sheet and referrer params on twitter.com and x.com.",
       "matcher": { "type": "host", "suffix": ["twitter.com", "x.com"] },
       "actions": [
-        { "type": "removeParameters", "select": { "names": ["s", "t", "ref_src", "ref_url", "src"] } }
+        { "type": "removeParameters", "select": { "names": ["s", "t", "ref_src", "ref_url", "src", "a"] } }
       ],
       "source": "builtIn",
       "category": "social"
