@@ -163,6 +163,15 @@ valueless params, repeated names, percent-encoded names.
 When nothing matches — no query, no applicable removals, or no token actually removed — `clean`
 returns `CleanResult.unchanged(url)` with the input URL untouched.
 
+The tokenizer and splicer are public as **`QueryParameters`**, and `clean` runs on it, so there
+is exactly one of each. `QueryParameters(url).parameters` lists the non-empty tokens in order,
+each with its on-wire name, decoded name and verbatim bytes; `url(omitting:)` rebuilds the original
+URL with any set of token indices left out. That lets a consumer rebuild a link for an arbitrary
+edit, such as putting back a token a rule removed, without splicing URLs itself. A token was
+removed by `clean` iff its `onWireName` is in `removedParameterNames`: the engine decides per
+decoded name, and one on-wire spelling always decodes to one name. The test suite pins that
+`url(omitting:)` of exactly those tokens equals `cleanedURL` across both fixture corpora.
+
 ---
 
 ## 8. Version-skew — degrade, never crash

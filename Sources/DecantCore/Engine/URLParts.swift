@@ -10,7 +10,7 @@ import Foundation
 ///
 /// Reconstruction keeps `prefix` and `fragment` byte-verbatim and only re-joins the kept query
 /// tokens, so "copy-perfect" fidelity (`SCHEMA.md` §7) reduces to never touching the remainder.
-struct URLParts {
+struct URLParts: Equatable {
   let prefix: Substring
   let rawQuery: Substring?
   let fragment: Substring

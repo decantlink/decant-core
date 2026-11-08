@@ -8,12 +8,13 @@ SwiftUI/AppKit. Standalone Swift package — clones build with no extra setup.
 
 ```
 Sources/DecantCore/           pure engine (Foundation only: URL/Data/Date; no CryptoKit)
-  Engine/                     RuleEngine, CleanResult, RuleCompiler, CompiledRuleSet, URLParts
+  Engine/                     RuleEngine, CleanResult, RuleCompiler, CompiledRuleSet,
+                              QueryParameters, URLParts
   Loading/                    RuleBundleLoader, SignatureVerifier (protocol)
   Models/                     Rule, RuleBundle, Codable, decoding errors
   Validation/                 RuleValidator, RuleDiagnostic
 Sources/DecantCoreFoundation/ CryptoKit-backed Ed25519 verifier (kept out of the pure core)
-Tests/DecantCoreTests/        model decoding, bundle loader, validator, URL-fidelity
+Tests/DecantCoreTests/        model decoding, bundle loader, validator, URL-fidelity, query splicing
 ```
 
 ## Commands
@@ -46,6 +47,8 @@ automatically. Formatting rules live in `.swift-format`.
 ## Contracts
 
 - Engine API → **canonical here**: `RuleEngine.clean(_:) -> CleanResult` — the public seam consumers depend on.
+- Query tokenizer/splicer → **canonical here**: `QueryParameters` (public). `clean` runs on it; never add a second
+  query split or splice.
 - Rule data format → **consumed from** `decant-rules/SCHEMA.md` + `schema/*.json`. Don't redefine the schema here; conform the decoder/validator to it.
 
 ## Pointers

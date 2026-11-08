@@ -10,8 +10,8 @@ import Foundation
 ///   `hostPath` rules live here too and are then filtered by the URL path.
 /// - `hostRegexRules` is the small, audited list matched linearly.
 ///
-/// Cleaning is a **surgical splice** on the raw query substring (see ``URLParts``); kept parameters
-/// keep their original bytes, only matched pairs and their separators are excised.
+/// Cleaning is a **surgical splice** on the raw query substring (see ``QueryParameters``); kept
+/// parameters keep their original bytes, only matched pairs and their separators are excised.
 public struct CompiledRuleSet: Sendable, RuleEngine {
   private let global: ParamRemovalSet
   private let bySuffix: [String: [CompiledRule]]
@@ -31,8 +31,8 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
   }
 
   public func clean(_ url: URL) -> CleanResult {
-    let parts = URLParts(url.absoluteString)
-    guard let rawQuery = parts.rawQuery, !rawQuery.isEmpty else { return .unchanged(url) }
+    let query = QueryParameters(url)
+    guard !query.parameters.isEmpty else { return .unchanged(url) }
 
     // Gather the removal criteria that apply to this URL's host (global first, then host-scoped).
     var removals = global
@@ -55,29 +55,14 @@ public struct CompiledRuleSet: Sendable, RuleEngine {
     }
     guard !removals.isEmpty else { return .unchanged(url) }
 
-    // Split on '&' only — ';' is not a separator (WHATWG). Tokens stay byte-verbatim.
-    var keptTokens: [Substring] = []
-    var removedNames: [String] = []
-    for token in rawQuery.split(separator: "&", omittingEmptySubsequences: false) {
-      // An empty token (from "&&" or a trailing "&") is not a parameter — keep it byte-verbatim.
-      if token.isEmpty {
-        keptTokens.append(token)
-        continue
-      }
-      let onWireName = token.firstIndex(of: "=").map { token[..<$0] } ?? token
-      let decodedName = String(onWireName).removingPercentEncoding ?? String(onWireName)
-      if removals.removes(decodedName: decodedName) {
-        removedNames.append(String(onWireName))
-      } else {
-        keptTokens.append(token)
-      }
-    }
-
-    guard !removedNames.isEmpty else { return .unchanged(url) }
-    let rebuilt = parts.reassembled(keptTokens: keptTokens)
+    let removed = query.parameters.filter { removals.removes(decodedName: $0.decodedName) }
+    guard !removed.isEmpty else { return .unchanged(url) }
     // A spliced remainder that no longer parses must not masquerade as a modified result.
-    guard let cleaned = URL(string: rebuilt) else { return .unchanged(url) }
-    return CleanResult(cleanedURL: cleaned, removedParameterNames: removedNames, wasModified: true)
+    guard let cleaned = query.url(omitting: Set(removed.map(\.index))) else {
+      return .unchanged(url)
+    }
+    return CleanResult(
+      cleanedURL: cleaned, removedParameterNames: removed.map(\.onWireName), wasModified: true)
   }
 
   /// The path `hostPath` matches against: percent-encoded, not dot-normalized, `/` if empty.
